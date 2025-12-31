@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solutio - Your Daily Planner</title>
+    <link rel="stylesheet" href="Main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Abril+Fatface&family=Lora:ital,wght@0,400..700;1,400..700&display=swap" rel="stylesheet">
+</head>
+
+<body background="Images\Home Page BG.png">
+    <div class="header">
+        <img src="Images/burger-menu-svgrepo-com.svg" width="40" height="40" style="cursor:pointer"
+            onclick="toggleSidebar()">
+        <a href="Index.html" class="header-title">SOLUTIO</a>
+        <div class="header-right">
+            <button class="btn-open-popup" onclick="togglePopup()"><img src="Images\person.png" width="35" height="35"
+                    alt="ok vaani sure"></button>
+        </div>
+    </div>
+
+    <div id="sidebar" class="sidebar">
+        <button class="close-btn" onclick="toggleSidebar()">✖</button>
+        <a href="Work.html">Work</a>
+        <a href="Events.html">Events</a>
+        <a href="Workout.html">Workout</a>
+        <a href="Personal.html">Personal</a>
+        <a href="#">Logout</a>
+    </div>
+
+    <div id="sidebarOverlay" class="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+    <div id="popupOverlay" class="overlay-container">
+        <div class="popup-box">
+            <img src="Images\person.png" height="60" width="60" alt="Image">
+            <button class="close-btn" onclick="togglePopup()">✖</button>
+            <form class="form-container">
+                <input class="form-input" type="text" placeholder="Enter Your Username" id="name" name="name" required>
+
+                <input class="form-input" type="Password" placeholder="Enter Your Password" id="Password"
+                    name="Password" required>
+
+                <button class="btn-submit" type="submit">
+                    Login
+                </button>
+                <span>If you don't already have an account <a href="#">Sign up</a></span>
+            </form>
+        </div>
+    </div>
+
+    <section class="home-container">
+        <div class="home-text">
+            <h1>Forget About Forgetting.</h1>
+            <p class="tagline">
+                <b><span style="color: #890000;">Welcome To The Solution Of Your Daily Problems.</span></b><br>
+            </p>
+        </div>
+
+        <div class="home-logo">
+            <img src="Images\1-removebg-preview.png" alt="Solutio Logo">
+        </div>
+    </section>
+
+    <footer class="site-footer">
+        <div class="footer-content">
+            <a href="https://www.instagram.com/sani.yea_/" target="_blank" class="instagram">
+                <img src="Images\instagram.png" alt="Instagram">
+                @sani.yea_</a>
+            <a href="https://www.instagram.com/vxxni_19/" target="_blank" class="instagram">
+                <img src="Images\instagram.png" alt="Instagram">
+                @vxxni_19</a>
+            <a href="https://www.instagram.com/ut_307/" target="_blank" class="instagram">
+                <img src="Images\instagram.png" alt="Instagram">
+                @ut_307</a>
+        </div>
+    </footer>
+
+
+    <script>
+        function togglePopup() {
+            const overlay = document.getElementById('popupOverlay');
+            overlay.classList.toggle('show');
+        }
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('show');
+            document.getElementById('sidebarOverlay').classList.toggle('show');
+        }
+
+    </script>
+
+</body>
+
+</html>

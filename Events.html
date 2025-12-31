@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solutio - Events Planner</title>
+    <link rel="stylesheet" href="Main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Abril+Fatface&family=Lora:ital,wght@0,400..700;1,400..700&display=swap"
+        rel="stylesheet">
+</head>
+
+<body background="Images\BG 4.png">
+    <div class="header">
+        <img src="Images/burger-menu-svgrepo-com.svg" width="40" height="40" style="cursor:pointer"
+            onclick="toggleSidebar()">
+        <a href="Index.html" class="header-title">SOLUTIO</a>
+        <div class="header-right">
+            <button class="btn-open-popup" onclick="togglePopup()"><img src="Images\person.png" width="35" height="35"
+                    alt="ok vaani sure"></button>
+        </div>
+    </div>
+
+    <div id="sidebar" class="sidebar">
+        <button class="close-btn" onclick="toggleSidebar()">✖</button>
+        <a href="Work.html">Work</a>
+        <a href="Events.html">Events</a>
+        <a href="Workout.html">Workout</a>
+        <a href="Personal.html">Personal</a>
+        <a href="#">Logout</a>
+    </div>
+
+    <div id="sidebarOverlay" class="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+    <div id="popupOverlay" class="overlay-container">
+        <div class="popup-box">
+            <img src="Images\person.png" height="60" width="60" alt="Image">
+            <button class="close-btn" onclick="togglePopup()">✖</button>
+            <form class="form-container">
+                <input class="form-input" type="text" placeholder="Enter Your Username" id="name" name="name" required>
+
+                <input class="form-input" type="Password" placeholder="Enter Your Password" id="Password"
+                    name="Password" required>
+
+                <button class="btn-submit" type="submit">
+                    Login
+                </button>
+                <span>If you don't already have an account <a href="#">Sign up</a></span>
+            </form>
+        </div>
+    </div>
+    <div id="main-layout">
+
+        <div id="todo-container">
+            <div class="todo-header">
+                <p>Events Planner</p>
+            </div>
+
+            <div id="todo-form">
+                <input type="text" id="input-box" placeholder="Add Task" />
+                <input type="date" id="date-box" class="date-selector" />
+                <input type="color" id="color-box" value="black">
+                <button id="input-button" onclick="addTask()">Add</button>
+            </div>
+
+            <ul id="list-container"></ul>
+
+            <div class="counter-container">
+                <div id="task-counters">
+                    Completed: <span id="completed-counter">0</span> |
+                    Incompleted: <span id="uncompleted-counter">0</span>
+                </div>
+            </div>
+        </div>
+
+        <div id="planner-container">
+            <div id="calendar">
+                <div class="calendar-header">
+                    <button id="prev-month">◀</button>
+                    <p id="calendar-title"></p>
+                    <button id="next-month">▶</button>
+                </div>
+                <div id="calendar-days">
+                    <span>Sun</span>
+                    <span>Mon</span>
+                    <span>Tue</span>
+                    <span>Wed</span>
+                    <span>Thu</span>
+                    <span>Fri</span>
+                    <span>Sat</span>
+                </div>
+                <div id="calendar-grid"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <footer class="site-footer">
+        <div class="footer-content">
+            <a href="https://www.instagram.com/sani.yea_/" target="_blank" class="instagram">
+                <img src="Images\instagram.png" alt="Instagram">
+                @sani.yea_</a>
+            <a href="https://www.instagram.com/vxxni_19/" target="_blank" class="instagram">
+                <img src="Images\instagram.png" alt="Instagram">
+                @vxxni_19</a>
+            <a href="https://www.instagram.com/ut_307/" target="_blank" class="instagram">
+                <img src="Images\instagram.png" alt="Instagram">
+                @ut_307</a>
+        </div>
+    </footer>
+
+    <script>
+        const LIST_KEY = "events_tasks";
+        function togglePopup() {
+            const overlay = document.getElementById('popupOverlay');
+            overlay.classList.toggle('show');
+        }
+
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('show');
+            document.getElementById('sidebarOverlay').classList.toggle('show');
+        }
+
+        const colorBox = document.getElementById("color-box");
+        const inputBox = document.getElementById("input-box");
+        const dateBox = document.getElementById("date-box");
+        const listContainer = document.getElementById("list-container");
+        const completedCounter = document.getElementById("completed-counter");
+        const uncompletedCounter = document.getElementById("uncompleted-counter");
+
+        function saveTasks() {
+            const tasks = [];
+            document.querySelectorAll("#list-container li").forEach(li => {
+                tasks.push({
+                    text: li.querySelector(".task-text").textContent,
+                    date: li.querySelector(".task-date").dataset.date,
+                    completed: li.classList.contains("completed"),
+                    color: li.dataset.color
+                });
+            });
+            localStorage.setItem(LIST_KEY, JSON.stringify(tasks));
+            updateCalendarHighlights(tasks);
+        }
+
+        function loadTasks() {
+            const savedTasks = JSON.parse(localStorage.getItem(LIST_KEY)) || [];
+            savedTasks.forEach(task =>
+                createTask(task.text, task.date, task.completed, task.color)
+            );
+            updateCounters();
+            updateCalendarHighlights(savedTasks);
+        }
+
+        function createTask(task, taskDate, completed = false, color = getRandomColor()) {
+            const li = document.createElement("li");
+            li.dataset.color = color;
+
+            li.innerHTML = `
+        <div class="task-left">
+            <input type="checkbox">
+            <span class="task-text">${task}</span>
+        </div>
+        <div class="task-right">
+            <span class="task-date" data-date="${taskDate || ""}">
+                ${taskDate || "No date"}
+            </span>
+            <span class="edit-btn">Edit</span>
+            <span class="delete-btn">
+                <img src="Images/delete.png">
+            </span>
+        </div>
+    `;
+
+            li.style.borderLeft = `6px solid ${color}`;
+
+            const checkbox = li.querySelector(".task-left input");
+            const taskSpan = li.querySelector(".task-text");
+            const editBtn = li.querySelector(".edit-btn");
+            const deleteBtn = li.querySelector(".delete-btn");
+
+            checkbox.checked = completed;
+            li.classList.toggle("completed", completed);
+
+            checkbox.addEventListener("click", () => {
+                li.classList.toggle("completed", checkbox.checked);
+                updateCounters();
+                saveTasks();
+            });
+
+            editBtn.addEventListener("click", () => {
+                const update = prompt("Edit task:", taskSpan.textContent);
+                if (update !== null) {
+                    taskSpan.textContent = update;
+                    saveTasks();
+                }
+            });
+
+            deleteBtn.addEventListener("click", () => {
+                if (confirm("Delete this task?")) {
+                    li.remove();
+                    updateCounters();
+                    saveTasks();
+                }
+            });
+
+            listContainer.appendChild(li);
+            updateCounters();
+        }
+
+        function addTask() {
+            const task = inputBox.value.trim();
+            const taskDate = dateBox.value;
+            const taskColor = colorBox.value;
+
+            if (!task) {
+                alert("Please write down a task");
+                return;
+            }
+
+            createTask(task, taskDate, false, taskColor);
+
+            inputBox.value = "";
+            dateBox.value = "";
+            saveTasks();
+        }
+
+        function updateCounters() {
+            const completedTasks = document.querySelectorAll(".completed").length;
+            const uncompletedTasks =
+                document.querySelectorAll("li:not(.completed)").length;
+
+            completedCounter.textContent = completedTasks;
+            uncompletedCounter.textContent = uncompletedTasks;
+        }
+
+        let currentMonth = new Date().getMonth();
+        let currentYear = new Date().getFullYear();
+
+        function generateCalendar() {
+            const calendarGrid = document.getElementById("calendar-grid");
+            const calendarTitle = document.getElementById("calendar-title");
+
+            calendarGrid.innerHTML = "";
+
+            const monthNames = [
+                "January", "February", "March", "April", "May", "June",
+                "July", "August", "September", "October", "November", "December"
+            ];
+
+            calendarTitle.textContent = `${monthNames[currentMonth]} ${currentYear}`;
+
+            const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+
+            const firstDay = new Date(currentYear, currentMonth, 1).getDay();
+
+            // Empty slots before day 1
+            for (let i = 0; i < firstDay; i++) {
+                const empty = document.createElement("div");
+                calendarGrid.appendChild(empty);
+            }
+
+            // Actual days
+            for (let day = 1; day <= daysInMonth; day++) {
+                const div = document.createElement("div");
+                div.classList.add("calendar-day");
+
+                const dateStr = `${currentYear}-${String(currentMonth + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+
+                div.dataset.date = dateStr;
+                div.textContent = day;
+
+                calendarGrid.appendChild(div);
+            }
+
+            // Re-apply highlights after regenerating calendar
+            const tasks = JSON.parse(localStorage.getItem(LIST_KEY)) || [];
+            updateCalendarHighlights(tasks);
+        }
+
+        function updateCalendarHighlights(tasks) {
+            document.querySelectorAll(".calendar-day").forEach(day => {
+                day.innerHTML = day.textContent;
+            });
+
+            tasks.forEach(task => {
+                if (!task.date) return;
+
+                const dayEl = document.querySelector(
+                    `.calendar-day[data-date="${task.date}"]`
+                );
+
+                if (dayEl) {
+                    const dash = document.createElement("span");
+                    dash.style.display = "inline-block";
+                    dash.style.width = "14px";
+                    dash.style.height = "3px";
+                    dash.style.borderRadius = "2px";
+                    dash.style.background = task.color;
+                    dash.style.margin = "1px auto 0";
+                    dash.style.display = "block";
+
+                    dayEl.appendChild(dash);
+                }
+            });
+        }
+
+        document.getElementById("prev-month").addEventListener("click", () => {
+            currentMonth--;
+            if (currentMonth < 0) {
+                currentMonth = 11;
+                currentYear--;
+            }
+            generateCalendar();
+        });
+
+        document.getElementById("next-month").addEventListener("click", () => {
+            currentMonth++;
+            if (currentMonth > 11) {
+                currentMonth = 0;
+                currentYear++;
+            }
+            generateCalendar();
+        });
+
+
+        window.onload = () => {
+            generateCalendar();
+            loadTasks();
+        };
+
+    </script>
+
+</body>
+
+</html>
